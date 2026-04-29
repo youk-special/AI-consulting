@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI経営顧問サービス</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans JP', sans-serif; background: #f0f4f8; display: flex; justify-content: center; padding: 24px; }
+  .page { width: 900px; background: #fff; box-shadow: 0 4px 32px rgba(0,0,0,0.12); }
+
+  /* HEADER */
+  .header { background: #1E3A5F; padding: 36px 48px 28px; position: relative; overflow: hidden; }
+  .header::after { content: ''; position: absolute; right: -60px; top: -60px; width: 300px; height: 300px; background: rgba(37,99,235,0.2); border-radius: 50%; }
+  .header-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; color: #60A5FA; margin-bottom: 10px; text-transform: uppercase; }
+  .header h1 { font-size: 36px; font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: 8px; position: relative; z-index: 1; }
+  .header h1 span { color: #60A5FA; }
+  .header-sub { font-size: 14px; color: #93C5FD; margin-bottom: 16px; }
+  .header-badge { display: inline-block; background: rgba(96,165,250,0.2); border: 1px solid #60A5FA; color: #93C5FD; font-size: 12px; padding: 4px 14px; border-radius: 20px; }
+
+  .body { padding: 32px 48px; }
+
+  /* 3 PROBLEMS */
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; color: #2563EB; text-transform: uppercase; margin-bottom: 12px; }
+  .section-title { font-size: 18px; font-weight: 700; color: #1E3A5F; margin-bottom: 20px; }
+  .problems { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
+  .problem { background: #EFF6FF; border-radius: 8px; padding: 16px; border-top: 3px solid #2563EB; }
+  .problem-icon { font-size: 22px; margin-bottom: 8px; }
+  .problem-title { font-size: 13px; font-weight: 700; color: #1E3A5F; margin-bottom: 6px; }
+  .problem-text { font-size: 12px; color: #555; line-height: 1.6; }
+
+  /* FLOW */
+  .flow { display: flex; align-items: stretch; gap: 0; margin-bottom: 32px; }
+  .flow-item { flex: 1; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 16px; position: relative; }
+  .flow-item:not(:last-child)::after { content: '▶'; position: absolute; right: -14px; top: 50%; transform: translateY(-50%); color: #2563EB; font-size: 16px; z-index: 2; }
+  .flow-item.highlight { background: #1E3A5F; border-color: #1E3A5F; }
+  .flow-step { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #2563EB; margin-bottom: 2px; }
+  .flow-item.highlight .flow-step { color: #60A5FA; }
+  .flow-period { font-size: 11px; font-weight: 700; color: #2563EB; background: #EFF6FF; display: inline-block; padding: 1px 8px; border-radius: 10px; margin-bottom: 6px; }
+  .flow-item.highlight .flow-period { background: rgba(96,165,250,0.2); color: #93C5FD; }
+  .flow-name { font-size: 13px; font-weight: 700; color: #1E3A5F; margin-bottom: 4px; }
+  .flow-item.highlight .flow-name { color: #fff; }
+  .flow-desc { font-size: 11px; color: #666; line-height: 1.5; }
+  .flow-item.highlight .flow-desc { color: #93C5FD; }
+
+  /* TWO COLS */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+
+  /* IMPROVEMENTS */
+  .improve-list { display: flex; flex-direction: column; gap: 8px; }
+  .improve-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #F8FAFC; border-radius: 6px; border-left: 3px solid #2563EB; }
+  .improve-cat { font-size: 11px; font-weight: 700; color: #1E3A5F; min-width: 90px; }
+  .improve-desc { font-size: 11px; color: #444; flex: 1; line-height: 1.5; }
+  .improve-hours { font-size: 11px; font-weight: 700; color: #2563EB; min-width: 70px; text-align: right; }
+
+  /* PLANS */
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 28px; align-items: start; }
+  .plan { border: 1px solid #E2E8F0; border-radius: 10px; padding: 18px 14px; position: relative; }
+  .plan.light { opacity: 0.8; }
+  .plan.featured { border-color: #2563EB; border-width: 2px; }
+  .plan.premium { border-color: #1E3A5F; border-width: 2px; background: #F0F7FF; }
+  .plan-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #2563EB; color: #fff; font-size: 10px; font-weight: 700; padding: 3px 12px; border-radius: 10px; white-space: nowrap; }
+  .plan-badge.premium-badge { background: #1E3A5F; }
+  .plan-label { font-size: 10px; font-weight: 700; color: #888; text-align: center; margin-bottom: 2px; letter-spacing: 0.05em; }
+  .plan-catch { font-size: 15px; font-weight: 900; color: #1E3A5F; text-align: center; margin-bottom: 6px; line-height: 1.3; }
+  .plan.featured .plan-catch { color: #2563EB; }
+  .plan.premium .plan-catch { color: #1E3A5F; }
+  .plan-price { font-size: 22px; font-weight: 900; color: #1E3A5F; text-align: center; margin-bottom: 2px; }
+  .plan-price span { font-size: 12px; font-weight: 400; color: #888; }
+  .plan-note { font-size: 10px; color: #aaa; text-align: center; margin-bottom: 10px; }
+  .plan-divider { border: none; border-top: 1px solid #E8EEF4; margin: 10px 0; }
+  .plan-items { list-style: none; }
+  .plan-items li { font-size: 11px; color: #444; padding: 4px 0; border-bottom: 1px solid #F0F0F0; display: flex; align-items: flex-start; gap: 6px; line-height: 1.5; }
+  .plan-items li::before { content: '✓'; color: #2563EB; font-weight: 700; flex-shrink: 0; }
+  .plan.premium .plan-items li::before { color: #1E3A5F; }
+
+  /* OVERSEAS */
+  .overseas { background: linear-gradient(135deg, #1E3A5F 0%, #1e4a8a 100%); border-radius: 10px; padding: 20px 24px; display: flex; align-items: center; gap: 24px; margin-bottom: 28px; }
+  .overseas-left { flex: 1; }
+  .overseas-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; color: #60A5FA; margin-bottom: 6px; }
+  .overseas-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .overseas-desc { font-size: 12px; color: #93C5FD; line-height: 1.6; }
+  .overseas-areas { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .overseas-area { background: rgba(96,165,250,0.2); border: 1px solid #60A5FA; color: #93C5FD; font-size: 11px; padding: 3px 10px; border-radius: 20px; }
+  .overseas-right { flex-shrink: 0; }
+  .overseas-stat { text-align: center; }
+  .overseas-stat-num { font-size: 28px; font-weight: 900; color: #fff; display: block; }
+  .overseas-stat-label { font-size: 11px; color: #93C5FD; }
+
+  /* FLOW MONTHLY */
+  .monthly { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+  .monthly-row { display: flex; align-items: center; gap: 12px; }
+  .monthly-tag { background: #1E3A5F; color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; min-width: 50px; text-align: center; flex-shrink: 0; }
+  .monthly-tag.blue { background: #2563EB; }
+  .monthly-desc { font-size: 12px; color: #444; }
+
+  /* FOOTER */
+  .footer { background: #1E3A5F; padding: 18px 48px; display: flex; align-items: center; justify-content: space-between; }
+  .footer-text { font-size: 11px; color: #93C5FD; }
+  .footer-cta { background: #2563EB; color: #fff; font-size: 12px; font-weight: 700; padding: 8px 20px; border-radius: 6px; }
+
+  .divider { border: none; border-top: 1px solid #E8EEF4; margin: 24px 0; }
+  .highlight-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 12px 16px; border-radius: 0 6px 6px 0; margin-bottom: 20px; font-size: 13px; color: #1E3A5F; line-height: 1.7; font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-tag">経営顧問サービス</div>
+    <h1>AIで業務を効率化し、<br><span>売上を伸ばす。</span></h1>
+    <p class="header-sub">オンライン完結型 AI経営顧問サービス</p>
+    <span class="header-badge">✦ 海外進出支援にも対応</span>
+  </div>
+
+  <div class="body">
+
+    <!-- PROBLEMS -->
+    <div class="section-label">こんなお悩みありませんか</div>
+    <div class="problems">
+      <div class="problem">
+        <div class="problem-icon">⏰</div>
+        <div class="problem-title">人手不足・工数過多</div>
+        <div class="problem-text">書類作成・メール対応に毎日時間を奪われている</div>
+      </div>
+      <div class="problem">
+        <div class="problem-icon">📉</div>
+        <div class="problem-title">営業・マーケの非効率</div>
+        <div class="problem-text">提案書作成・リスト作りに営業の時間が取られている</div>
+      </div>
+      <div class="problem">
+        <div class="problem-icon">🌐</div>
+        <div class="problem-title">売上の頭打ち</div>
+        <div class="problem-text">国内市場が縮小し、新しい販路を探している</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      まず社内の無駄をAIでなくす。浮いたコストと時間で、売上を伸ばす。<br>
+      その両方を、<strong>経営顧問として一緒に実行します。</strong>
+    </div>
+
+    <!-- FLOW -->
+    <div class="section-label">サービスの全体像</div>
+    <div class="flow" style="margin-bottom: 32px;">
+      <div class="flow-item highlight">
+        <div class="flow-step">STEP 1</div>
+        <div class="flow-period">約3ヶ月</div>
+        <div class="flow-name">AI業務改善</div>
+        <div class="flow-desc">社内の無駄をAIで削減。月30〜100万円分の工数を創出</div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-step">STEP 2</div>
+        <div class="flow-period">約3ヶ月</div>
+        <div class="flow-name">営業・マーケ強化</div>
+        <div class="flow-desc">AI営業支援で商談数・受注率を向上させる</div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-step">STEP 3</div>
+        <div class="flow-period">継続支援</div>
+        <div class="flow-name">次のステージへ</div>
+        <div class="flow-desc">新市場開拓・海外進出など成長戦略を実行支援</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- IMPROVEMENTS -->
+      <div>
+        <div class="section-label">業務改善の具体例</div>
+        <div class="improve-list">
+          <div class="improve-row">
+            <div class="improve-cat">書類・文書作成</div>
+            <div class="improve-desc">議事録・報告書・提案書の自動生成</div>
+            <div class="improve-hours">月20〜40h</div>
+          </div>
+          <div class="improve-row">
+            <div class="improve-cat">メール・問合せ</div>
+            <div class="improve-desc">返信文案の自動生成・FAQ Bot構築</div>
+            <div class="improve-hours">月15〜30h</div>
+          </div>
+          <div class="improve-row">
+            <div class="improve-cat">データ分析</div>
+            <div class="improve-desc">KPI自動集計・Excel作業のPython化</div>
+            <div class="improve-hours">月10〜25h</div>
+          </div>
+          <div class="improve-row">
+            <div class="improve-cat">営業支援</div>
+            <div class="improve-desc">提案書・リスト・フォローメールを自動化</div>
+            <div class="improve-hours">月10〜20h</div>
+          </div>
+          <div class="improve-row">
+            <div class="improve-cat">コンテンツ制作</div>
+            <div class="improve-desc">SNS・ブログ・メルマガの下書き生成</div>
+            <div class="improve-hours">月10〜20h</div>
+          </div>
+          <div class="improve-row" style="border-left-color: #1E3A5F; background: #EFF6FF;">
+            <div class="improve-cat" style="color:#2563EB;">合計（目安）</div>
+            <div class="improve-desc" style="font-weight:700; color:#1E3A5F;">月60〜100時間以上の削減</div>
+            <div class="improve-hours" style="color:#1E3A5F;">18〜30万円</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MONTHLY FLOW -->
+      <div>
+        <div class="section-label">月次サービスの流れ</div>
+        <div class="monthly">
+          <div class="monthly-row">
+            <span class="monthly-tag">月初</span>
+            <span class="monthly-desc">先月の成果レポート送付・翌月方針共有</span>
+          </div>
+          <div class="monthly-row">
+            <span class="monthly-tag blue">週次</span>
+            <span class="monthly-desc">チャット（Slack等）での相談・質問対応</span>
+          </div>
+          <div class="monthly-row">
+            <span class="monthly-tag">中旬</span>
+            <span class="monthly-desc">MTG①：進捗確認・課題整理・施策調整</span>
+          </div>
+          <div class="monthly-row">
+            <span class="monthly-tag blue">月末</span>
+            <span class="monthly-desc">MTG②（スタンダード以上）：翌月の施策決定</span>
+          </div>
+          <div class="monthly-row">
+            <span class="monthly-tag">随時</span>
+            <span class="monthly-desc">チャット対応（平日10〜18時）</span>
+          </div>
+        </div>
+
+        <div style="background:#F8FAFC; border-radius:8px; padding:14px; margin-top:8px;">
+          <div style="font-size:11px; font-weight:700; color:#1E3A5F; margin-bottom:8px;">使用ツール</div>
+          <div style="font-size:11px; color:#555; line-height:2;">
+            MTG：Google Meet / Zoom<br>
+            チャット：Slack / ChatWork / LINE WORKS<br>
+            議事録：AI自動作成・共有<br>
+            請求：翌月末払い
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OVERSEAS -->
+    <div class="overseas">
+      <div class="overseas-left">
+        <div class="overseas-tag">OPTION</div>
+        <div class="overseas-title">海外進出支援にも対応</div>
+        <div class="overseas-desc">
+          AI業務改善で生まれた余力を使い、次のステージとして海外市場へ。<br>
+          マレーシア・ASEAN・カナダを中心に、現地人脈を活かした実行支援が可能です。
+        </div>
+        <div class="overseas-areas">
+          <span class="overseas-area">市場調査・参入戦略</span>
+          <span class="overseas-area">多言語対応自動化</span>
+          <span class="overseas-area">現地パートナー紹介</span>
+        </div>
+      </div>
+      <div class="overseas-right">
+        <div class="overseas-stat">
+          <span class="overseas-stat-num">3</span>
+          <span class="overseas-stat-label">対応エリア<br>（日本・ASEAN・北米）</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLANS -->
+    <div class="section-label">料金プラン — どこまでやってくれるかで選ぶ</div>
+    <div class="plans">
+
+      <!-- ライト -->
+      <div class="plan light">
+        <div class="plan-label">LIGHT PLAN</div>
+        <div class="plan-catch">アドバイスだけ</div>
+        <div class="plan-price">10〜15<span>万円/月</span></div>
+        <div class="plan-note">初期診断込・税別</div>
+        <hr class="plan-divider">
+        <ul class="plan-items">
+          <li>AI活用の方針・優先順位のアドバイス</li>
+          <li>月1回MTG（60分）</li>
+          <li>チャット対応（翌営業日以内）</li>
+          <li>月次簡易レポート</li>
+          <li>実装・実行はお客様が行う</li>
+        </ul>
+      </div>
+
+      <!-- スタンダード -->
+      <div class="plan featured">
+        <div class="plan-badge">まずここから</div>
+        <div class="plan-label">STANDARD PLAN</div>
+        <div class="plan-catch">戦略＋伴走</div>
+        <div class="plan-price">20〜30<span>万円/月</span></div>
+        <div class="plan-note">初期診断込・税別</div>
+        <hr class="plan-divider">
+        <ul class="plan-items">
+          <li>AI業務改善の戦略立案＋一部実装支援</li>
+          <li>月2回MTG（60分×2）</li>
+          <li>チャット対応（当日中）</li>
+          <li>月次詳細レポート＋KPI管理</li>
+          <li>海外進出の相談・情報提供</li>
+        </ul>
+      </div>
+
+      <!-- プレミアム -->
+      <div class="plan premium">
+        <div class="plan-badge premium-badge">フルコミット</div>
+        <div class="plan-label">PREMIUM PLAN</div>
+        <div class="plan-catch">一緒に実行まで</div>
+        <div class="plan-price">40〜50<span>万円/月</span></div>
+        <div class="plan-note">初期診断込・税別</div>
+        <hr class="plan-divider">
+        <ul class="plan-items">
+          <li>AI業務改善のフル実装支援</li>
+          <li>週1回MTG（45分）</li>
+          <li>チャット対応（数時間以内）</li>
+          <li>詳細レポート＋KPIダッシュボード</li>
+          <li>海外進出の戦略立案・現地実行支援</li>
+        </ul>
+      </div>
+
+    </div>
+    <p style="font-size:11px; color:#888; margin-bottom: 4px;">※ すべて税別。業種・規模・支援内容によりお見積もりいたします。</p>
+    <p style="font-size:11px; color:#888;">※ まずは初回無料相談からお気軽にどうぞ。</p>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div>
+      <div class="footer-text" style="font-size:13px; font-weight:700; color:#fff; margin-bottom:4px;">まずはお気軽にご相談ください</div>
+      <div class="footer-text">初回相談無料 ／ オンライン完結 ／ 全国対応</div>
+    </div>
+    <div class="footer-cta">無料相談を申し込む</div>
+  </div>
+
+</div>
+</body>
+</html>
